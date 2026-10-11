@@ -1,0 +1,85 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile with display name, email, and preferences",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique user ID matching auth UID" },
+        "displayName": { "type": "string", "description": "User full name or alias", "maxLength": 100 },
+        "email": { "type": "string", "description": "User email address", "maxLength": 150 },
+        "photoURL": { "type": "string", "description": "Avatar URL", "maxLength": 500 },
+        "role": { "type": "string", "description": "Role in the academy", "enum": ["student", "educator", "admin"] },
+        "createdAt": { "type": "string", "description": "Creation timestamp ISO string" },
+        "updatedAt": { "type": "string", "description": "Last updated timestamp ISO string" }
+      },
+      "required": ["id", "displayName", "email"]
+    },
+    "Quiz": {
+      "title": "Quiz",
+      "description": "Quiz metadata and questions created by students and educators",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique Quiz ID" },
+        "title": { "type": "string", "description": "Title of the quiz", "maxLength": 200 },
+        "description": { "type": "string", "description": "Detailed description of quiz scope", "maxLength": 1000 },
+        "subject": { "type": "string", "description": "Subject category", "maxLength": 100 },
+        "topic": { "type": "string", "description": "Primary topic covered", "maxLength": 100 },
+        "difficulty": { "type": "string", "description": "Target difficulty", "enum": ["Beginner", "Intermediate", "Advanced"] },
+        "examCategory": { "type": "string", "description": "Examination focus", "maxLength": 100 },
+        "visibility": { "type": "string", "description": "Quiz visibility", "enum": ["public", "private", "unlisted"] },
+        "shareCode": { "type": "string", "description": "6-character unique access code", "maxLength": 20 },
+        "creatorId": { "type": "string", "description": "Creator UID" },
+        "creatorName": { "type": "string", "description": "Name of the quiz creator", "maxLength": 100 },
+        "creatorEmail": { "type": "string", "description": "Email of the quiz creator", "maxLength": 150 },
+        "isPublished": { "type": "boolean", "description": "Whether the quiz is publicly active or a draft" },
+        "timeLimitMinutes": { "type": "number", "description": "Time limit in minutes (0 for unlimited)" },
+        "totalQuestions": { "type": "number", "description": "Count of questions in this quiz" },
+        "totalPoints": { "type": "number", "description": "Total available marks" },
+        "createdAt": { "type": "string", "description": "ISO timestamp of quiz creation" },
+        "updatedAt": { "type": "string", "description": "ISO timestamp of quiz update" }
+      },
+      "required": ["id", "title", "subject", "topic", "creatorId", "creatorName", "isPublished"]
+    },
+    "Attempt": {
+      "title": "Attempt",
+      "description": "Submitted quiz attempt record with marks and topic accuracy",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique attempt identifier" },
+        "quizId": { "type": "string", "description": "Target quiz ID" },
+        "quizTitle": { "type": "string", "description": "Title of the quiz at attempt time", "maxLength": 200 },
+        "quizSubject": { "type": "string", "description": "Subject of the quiz", "maxLength": 100 },
+        "quizTopic": { "type": "string", "description": "Topic of the quiz", "maxLength": 100 },
+        "userId": { "type": "string", "description": "UID of the test taker" },
+        "userName": { "type": "string", "description": "Name of test taker", "maxLength": 100 },
+        "userEmail": { "type": "string", "description": "Email of test taker", "maxLength": 150 },
+        "totalQuestions": { "type": "number", "description": "Total question count" },
+        "score": { "type": "number", "description": "Points earned" },
+        "maxScore": { "type": "number", "description": "Maximum points achievable" },
+        "percentage": { "type": "number", "description": "Percentage score 0 to 100" },
+        "correctAnswers": { "type": "number", "description": "Count of correct answers" },
+        "incorrectAnswers": { "type": "number", "description": "Count of wrong answers" },
+        "unanswered": { "type": "number", "description": "Count of skipped questions" },
+        "accuracy": { "type": "number", "description": "Accuracy percentage" },
+        "timeTakenSeconds": { "type": "number", "description": "Total duration spent in seconds" },
+        "submittedAt": { "type": "string", "description": "ISO timestamp of submission" }
+      },
+      "required": ["id", "quizId", "userId", "score", "maxScore", "percentage", "submittedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles stored by auth UID"
+    },
+    "/quizzes/{quizId}": {
+      "schema": "Quiz",
+      "description": "Quizzes created and published by users"
+    },
+    "/attempts/{attemptId}": {
+      "schema": "Attempt",
+      "description": "Evaluation attempts records for students"
+    }
+  }
+}

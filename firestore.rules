@@ -1,0 +1,53 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // User profiles
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isOwner(userId) && isValidId(userId);
+      allow update: if isOwner(userId) && isValidId(userId) && request.resource.data.id == userId;
+      allow delete: if isOwner(userId);
+    }
+
+    // Quizzes
+    match /quizzes/{quizId} {
+      allow get: if isSignedIn() && (resource.data.isPublished == true || resource.data.creatorId == request.auth.uid);
+      allow list: if isSignedIn() && (resource.data.isPublished == true || resource.data.creatorId == request.auth.uid);
+      allow create: if isSignedIn() && isValidId(quizId) && request.resource.data.creatorId == request.auth.uid;
+      allow update: if isSignedIn() && isValidId(quizId) && resource.data.creatorId == request.auth.uid && request.resource.data.creatorId == resource.data.creatorId;
+      allow delete: if isSignedIn() && isValidId(quizId) && resource.data.creatorId == request.auth.uid;
+    }
+
+    // Quiz attempts
+    match /attempts/{attemptId} {
+      allow get: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && isValidId(attemptId) && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    // Test connection doc
+    match /test/{docId} {
+      allow read: if true;
+    }
+  }
+}

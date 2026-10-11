@@ -1,0 +1,6 @@
+{
+  "name": "QuizUp - Educational Quiz & Assessment Platform",
+  "description": "Interactive quiz platform for creating, sharing, and evaluating multiple-choice quizzes with topic-wise performance analysis, weak topic recommendations, and detailed analytics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
